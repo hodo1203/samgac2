@@ -23,6 +23,13 @@ st.markdown("""
         color: #4B5563;
         margin-bottom: 2rem;
     }
+    .card {
+        background-color: #F8FAFC;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid #E2E8F0;
+        margin-bottom: 1rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -37,7 +44,7 @@ tab_selection = st.sidebar.radio(
 
 if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
     st.markdown("### 🔍 단위 원(Unit Circle)과 삼각함수 그래프의 실시간 연동")
-    st.markdown("좌측 슬라이더를 움직이거나 각도를 조절하여 각도 $\\theta$에 따른 **단위 원 위의 점 $( \\cos\\theta, \\sin\\theta )$**과 **삼각함수 그래프**가 어떻게 동시에 그려지는지 확인해보세요.")
+    st.markdown("오른쪽 슬라이더를 움직이거나 각도를 조절하여 각도 $\\theta$에 따른 **단위 원 위의 점 $( \\cos\\theta, \\sin\\theta )$**과 **삼각함수 그래프**가 어떻게 동시에 그려지는지 확인해보세요.")
     
     col1, col2 = st.columns([1, 1], gap="large")
     
@@ -111,7 +118,7 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
 
 elif tab_selection == "2. 특수각 학습 표":
     st.markdown("### 📚 삼각함수 특수각 학습 가이드 & 공식 표")
-    st.markdown("수학에서 가장 빈번하게 등장하는 **30°, 45°, 60°, 90°** (호도법: $\\frac{\\pi}{6}, \\frac{\\pi}{4}, \\frac{\\pi}{3}, \\frac{\\pi}{2}$)의 특수각 값을 완벽하게 정리한 표입니다.")
+    st.markdown("수학에서 가장 빈번하게 등장하는 **30°, 45°, 60°, 90°** (호도법: $\\frac{\\pi}{6}, \\frac{\\pi}{4}, \\frac{\\pi}{3}, \\frac{\\pi}{2}$)의 특수각 값을 완벽하게 정리한 표입니다. 다음 퀴즈 게임을 위해 꼼꼼히 학습해 보세요!")
     
     data = {
         "각도 (도)": ["0°", "30°", "45°", "60°", "90°", "180°", "270°", "360°"],
@@ -136,6 +143,7 @@ elif tab_selection == "3. 삼각함수 특수각 & 라디안 퀴즈 게임":
     st.markdown("### 🎮 삼각함수 특수각 & 라디안 마스터 챌린지")
     st.markdown("앞서 학습한 특수각과 라디안 변환, 그리고 삼각함수 값을 직접 테스트해보는 퀴즈 게임입니다!")
     
+    # Initialize quiz state
     if "quiz_started" not in st.session_state:
         st.session_state.quiz_started = False
     if "score" not in st.session_state:
@@ -178,7 +186,6 @@ elif tab_selection == "3. 삼각함수 특수각 & 라디안 퀴즈 게임":
             st.session_state.q_index = 0
             st.rerun()
     else:
-    ...
         q_idx = st.session_state.q_index
         if q_idx < len(questions):
             curr_q = questions[q_idx]
