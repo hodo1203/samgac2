@@ -59,7 +59,7 @@ def format_radian_fraction(rad):
 
 if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
     st.markdown("### 🔍 단위 원 직접 클릭 및 실시간 연동 시각화")
-    st.markdown("좌측 **단위 원 그래프 안의 원하는 지점을 클릭**하거나 하단 슬라이더를 움직여 보세요. 원 위의 점과 삼각함수 그래프가 실시간으로 연동됩니다.")
+    st.markdown("좌측 **단위 원 그래프 안의 원하는 지점을 마우스로 클릭**하거나 하단 슬라이더를 움직여 보세요. 원 위의 점과 삼각함수 파동이 즉시 연동됩니다. *(Streamlit 환경 특성상 드래그 대신 '클릭'으로 위치를 이동시킬 수 있습니다.)*")
     
     col_opt1, col_opt2, _ = st.columns([1, 1, 3])
     with col_opt1:
@@ -75,13 +75,14 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
     with col1:
         st.markdown("#### 🔵 좌측: 단위 원과 동경 ($x^2 + y^2 = 1$)")
         
+        # 'rad' 표기를 '라디안'으로 모두 변경
         angle_rad = st.slider(
-            "라디안 선택 (θ rad)", 
+            "라디안 선택 (θ 라디안)", 
             min_value=0.0, 
             max_value=float(2 * np.pi), 
             value=st.session_state["radian_val"], 
             step=0.01, 
-            format="%.2f rad",
+            format="%.2f 라디안",
             key="slider_input"
         )
         
@@ -116,7 +117,6 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
             showlegend=False
         )
         
-        # Streamlit 내장 on_select를 활용한 원 클릭 조작
         event = st.plotly_chart(fig_circle, on_select="rerun", key="circle_plot", use_container_width=True)
         
         if event and "selection" in event and "points" in event["selection"]:
@@ -133,7 +133,8 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
                         st.session_state["radian_val"] = float(new_rad)
                         st.rerun()
 
-        st.info(f"현재 각도: **{angle_deg:.1f}°** ( 호도법: **{rad_str}** / **{st.session_state['radian_val']:.3f} rad** )  \n점 P 좌표 = ( $\\cos\\theta$, $\\sin\\theta$ ) = ( **{cos_val:.3f}**, **{sin_val:.3f}** )")
+        # 출력부 단위도 '라디안'으로 변경
+        st.info(f"현재 각도: **{angle_deg:.1f}°** ( 호도법: **{rad_str}** / **{st.session_state['radian_val']:.3f} 라디안** )  \n점 P 좌표 = ( $\\cos\\theta$, $\\sin\\theta$ ) = ( **{cos_val:.3f}**, **{sin_val:.3f}** )")
 
     with col2:
         st.markdown("#### 📈 우측: 삼각함수 그래프")
@@ -162,7 +163,7 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
             showlegend=True
         )
         st.plotly_chart(fig_trig, use_container_width=True)
-        st.success("원 그래프를 클릭하거나 슬라이더를 움직여 실시간으로 연동되는 파동을 확인해 보세요.")
+        st.success("원 그래프 안쪽을 클릭하거나 슬라이더를 움직여 실시간으로 연동되는 파동을 확인해 보세요.")
 
 elif tab_selection == "2. 특수각 학습 표":
     st.markdown("### 📚 삼각함수 특수각 학습 가이드 & 공식 표")
@@ -186,6 +187,8 @@ elif tab_selection == "3. 삼각함수 특수각 & 라디안 퀴즈 게임":
         st.session_state.score = 0
     if "q_index" not in st.session_state:
         st.session_state.q_index = 0
+    if "user_answers" not in st.session_state:
+        st.session_state.user_answers = []
 
     questions = [
         {"q": "1. 30°를 라디안(호도법)으로 올바르게 변환한 것은?", "options": ["π/6", "π/4", "π/3", "π/2"], "answer": "π/6"},
@@ -200,6 +203,7 @@ elif tab_selection == "3. 삼각함수 특수각 & 라디안 퀴즈 게임":
             st.session_state.quiz_started = True
             st.session_state.score = 0
             st.session_state.q_index = 0
+            st.session_state.user_answers = []
             st.rerun()
     else:
         q_idx = st.session_state.q_index
@@ -209,18 +213,42 @@ elif tab_selection == "3. 삼각함수 특수각 & 라디안 퀴즈 게임":
             user_choice = st.radio("보기 중 정답을 선택하세요:", curr_q['options'], key=f"q_{q_idx}")
             
             if st.button("정답 제출", key=f"submit_{q_idx}"):
-                if user_choice == curr_q['answer']:
+                is_correct = (user_choice == curr_q['answer'])
+                if is_correct:
                     st.success("🎉 정답입니다!")
                     st.session_state.score += 1
                 else:
                     st.error(f"❌ 틀렸습니다. 정답은 **{curr_q['answer']}** 입니다.")
+                
+                # 유저의 응답 기록 저장
+                st.session_state.user_answers.append({
+                    "question": curr_q['q'],
+                    "choice": user_choice,
+                    "answer": curr_q['answer'],
+                    "is_correct": is_correct
+                })
+                
                 st.session_state.q_index += 1
                 st.rerun()
         else:
             st.markdown("---")
             st.markdown(f"### 🏆 퀴즈 종료! 최종 점수: {st.session_state.score} / {len(questions)} 점")
+            
+            # 오답 노트 출력
+            st.markdown("#### 📝 오답 노트 및 정답 확인")
+            has_wrong_answers = False
+            
+            for i, record in enumerate(st.session_state.user_answers):
+                if not record["is_correct"]:
+                    has_wrong_answers = True
+                    st.warning(f"**{record['question']}**  \n❌ 내가 고른 답: {record['choice']}  \n✅ **올바른 정답: {record['answer']}**")
+            
+            if not has_wrong_answers:
+                st.success("축하합니다! 모든 문제를 완벽하게 맞혔습니다. 💯")
+
             if st.button("🔄 퀴즈 다시 풀기"):
                 st.session_state.quiz_started = False
                 st.session_state.score = 0
                 st.session_state.q_index = 0
+                st.session_state.user_answers = []
                 st.rerun()
