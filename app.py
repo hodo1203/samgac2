@@ -28,7 +28,6 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
     st.markdown("### 🔍 단위 원과 삼각함수 그래프의 실시간 드래그 연동")
     st.markdown("아래의 **라디안 슬라이더를 마우스로 꾹 누른 채 드래그**해 보세요. 단위 원 위의 점과 삼각함수 파동이 실시간으로 연동됩니다.")
     
-    # 그래프 표시 옵션 체크박스
     col_opt1, col_opt2, _ = st.columns([1, 1, 3])
     with col_opt1:
         show_sin = st.checkbox("y = sin(x) 그래프 표시", value=True)
@@ -39,10 +38,9 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
     
     with col1:
         st.markdown("#### 🔵 좌측: 단위 원과 동경 (방정식 $x^2 + y^2 = 1$)")
-        # 라디안 단위 슬라이더 (0 ~ 2π)
         angle_rad = st.slider(
             "라디안 선택 (θ rad)", 
-            min_tvalue=0.0, max_value=float(2 * np.pi), 
+            min_value=0.0, max_value=float(2 * np.pi), 
             value=float(np.pi / 4), step=0.01, 
             format="%.2f rad",
             key="radian_slider"
@@ -51,22 +49,18 @@ if tab_selection == "1. 단위 원과 삼각함수 연동 시각화":
         
         fig_circle = go.Figure()
         
-        # 단위 원 그리기
         theta_full = np.linspace(0, 2*np.pi, 200)
         fig_circle.add_trace(go.Scatter(x=np.cos(theta_full), y=np.sin(theta_full), mode='lines', line=dict(color='#94A3B8', width=2), name='단위 원'))
         
-        # 축 선
         fig_circle.add_shape(type="line", x0=-1.3, y0=0, x1=1.3, y1=0, line=dict(color="gray", dash="dash"))
         fig_circle.add_shape(type="line", x0=0, y0=-1.3, x1=0, y1=1.3, line=dict(color="gray", dash="dash"))
         
         cos_val = np.cos(angle_rad)
         sin_val = np.sin(angle_rad)
         
-        # 동경 및 점 P 표시
         fig_circle.add_trace(go.Scatter(x=[0, cos_val], y=[0, sin_val], mode='lines+markers', line=dict(color='#2563EB', width=4), marker=dict(size=10), name='동경'))
         fig_circle.add_trace(go.Scatter(x=[cos_val], y=[sin_val], mode='markers', marker=dict(size=14, color='#EF4444'), name=f'P({cos_val:.2f}, {sin_val:.2f})'))
         
-        # 보조선
         fig_circle.add_shape(type="line", x0=cos_val, y0=0, x1=cos_val, y1=sin_val, line=dict(color="#EF4444", dash="dot"))
         fig_circle.add_shape(type="line", x0=0, y0=sin_val, x1=cos_val, y1=sin_val, line=dict(color="#3B82F6", dash="dot"))
         
